@@ -1,0 +1,75 @@
+---
+title: "ARM"
+author: "Ryan Hensel"
+date: "2024-10-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+install.packages("Rcpp")
+```
+
+
+
+```{r}
+install.packages("arules")
+install.packages("TSP")
+install.packages("data.table")
+install.packages("arulesViz", dependencies = TRUE)
+install.packages("sp")
+install.packages("datasets.load") 
+install.packages("ggplot2") 
+
+install.packages("dplyr", dependencies = TRUE)
+install.packages("purrr", dependencies = TRUE)
+install.packages("devtools", dependencies = TRUE)
+install.packages("tidyr")
+library(viridis)
+library(arules)
+library(TSP)
+library(data.table)
+library(ggplot2)
+library(Matrix)
+library(tcltk)
+library(dplyr)
+#library(devtools)
+library(purrr)
+library(tidyr)
+```
+
+```{r}
+ARM_df <- read.transactions("C:/Users/ryhen/OneDrive - UCB-O365/Machine Learning/Project/Part 2/ARM/ARM_Pokemon.csv", rm.duplicates = FALSE, format = "basket", sep=",")
+
+inspect(ARM_df[1:5])
+```
+
+```{r}
+apriori_ARM <- arules::apriori(ARM_df, parameter = list(support = .05, confidence = .05, minlen=2))
+inspect(apriori_ARM)
+```
+
+```{r}
+Pokemon_Rules <- apriori(data=ARM_df,parameter = list(supp=.025, conf=.025, minlen=5),
+                     appearance = list(default="lhs", rhs="incineroar"),
+                     control=list(verbose=FALSE))
+Pokemon_Rules <- sort(Pokemon_Rules, decreasing=TRUE, by='confidence')
+inspect(Pokemon_Rules)
+```
+
+
+```{r}
+arules::itemFrequencyPlot(ARM_df, topN = 20,
+                          main = 'Relative Item Frequency Plot',
+                          type = "relative", #absolute
+                          ylab = "Item Frequency (Relative)")
+```
