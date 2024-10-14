@@ -50,45 +50,64 @@ library(tidyr)
 ```{r}
 ARM_df <- read.transactions("C:/Users/ryhen/OneDrive - UCB-O365/Machine Learning/Project/Part 2/ARM/ARM_Pokemon.csv", rm.duplicates = FALSE, format = "basket", sep=",")
 
-inspect(ARM_df[1:5])
+inspect(ARM_df)
 ```
 
-```{r}
-apriori_ARM <- arules::apriori(ARM_df, parameter = list(support = .05, confidence = .95, minlen=2))
-inspect(apriori_ARM)
-```
 
+# Creating the ARM for a specific Pokemon
 ```{r}
-Pokemon_Rules <- apriori(data=ARM_df,parameter = list(supp=.025, conf=.025, minlen=5),
+Incineror_Rules <- apriori(data=ARM_df,parameter = list(supp=.025, conf=.025, minlen=2),
                      appearance = list(default="lhs", rhs="incineroar"),
                      control=list(verbose=FALSE))
-Pokemon_Rules <- sort(Pokemon_Rules, decreasing=TRUE, by='confidence')
-inspect(Pokemon_Rules)
 ```
+
+
+
+
+# sorting by the top 15 in Support
+```{r}
+Incineror_Support <- sort(Incineror_Rules, decreasing=TRUE, by='support')
+Incineror_Support_df <- as(Incineror_Support[1:15], "data.frame")
+options(max.print = 1000)  # Set this to a higher number if needed
+print(Incineror_Support_df)
+```
+
+# sorting by the top 15 in Confidence
+```{r}
+Incineror_Confidence <- sort(Incineror_Rules, decreasing=TRUE, by='confidence')
+Incineror_Confidence_df <- as(Incineror_Confidence[1:15], "data.frame")
+options(max.print = 1000)  # Set this to a higher number if needed
+print(Incineror_Confidence_df)
+```
+
+# sorting by the top 15 in Lift
+```{r}
+Incineror_Lift <- sort(Incineror_Rules, decreasing=TRUE, by='lift')
+Incineror_Lift_df <- as(Incineror_Lift[1:15], "data.frame")
+print(Incineror_Lift_df)
+```
+
+
 
 
 ```{r}
 arules::itemFrequencyPlot(ARM_df, topN = 20,
                           main = 'Relative Item Frequency Plot',
-                          type = "relative", #absolute
-                          ylab = "Item Frequency (Relative)")
+                          type = "relative",  # absolute
+                          ylab = "Item Frequency (Relative)",
+                          col = "lightblue")  # Change color to light blue
+
 ```
 
-```{r}
-SortedRules<- sort(Pokemon_Rules, by="confidence", decreasing=TRUE)
-inspect(SortedRules[1:10])
-```
 
 ```{r}
-install.packages("fastmap")
-```
-```{r}
-install.packages('arulezViz')
-library(arulesViz)
+library(devtools)
+install_github("mhahsler/arulesViz")
 ```
 
+
 ```{r}
-Incineror_Vis <- head(sort(SortedRules, by="lift"))
+Incineror_Vis <- head(sort(Incineror_Confidence, by="lift"),15)
 plot(Incineror_Vis)
-plot(Incineror_Vis, method='graph', engine='interactive')
+plot(Incineror_Vis, method='graph', engine='htmlwidget')
 ```
