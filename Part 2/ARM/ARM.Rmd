@@ -54,7 +54,7 @@ inspect(ARM_df[1:5])
 ```
 
 ```{r}
-apriori_ARM <- arules::apriori(ARM_df, parameter = list(support = .05, confidence = .05, minlen=2))
+apriori_ARM <- arules::apriori(ARM_df, parameter = list(support = .05, confidence = .95, minlen=2))
 inspect(apriori_ARM)
 ```
 
@@ -72,4 +72,23 @@ arules::itemFrequencyPlot(ARM_df, topN = 20,
                           main = 'Relative Item Frequency Plot',
                           type = "relative", #absolute
                           ylab = "Item Frequency (Relative)")
+```
+
+```{r}
+SortedRules<- sort(Pokemon_Rules, by="confidence", decreasing=TRUE)
+inspect(SortedRules[1:10])
+```
+
+```{r}
+install.packages("fastmap")
+```
+```{r}
+install.packages('arulezViz')
+library(arulesViz)
+```
+
+```{r}
+Incineror_Vis <- head(sort(SortedRules, by="lift"))
+plot(Incineror_Vis)
+plot(Incineror_Vis, method='graph', engine='interactive')
 ```
